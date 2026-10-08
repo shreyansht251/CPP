@@ -1,38 +1,71 @@
-class Solution {
-public:
-    vector<vector<string>> ans;
+#include <iostream>
+using namespace std;
 
-    bool safe(vector<string>& board, int r, int c, int n) {
-        for (int i = 0; i < r; i++)
-            if (board[i][c] == 'Q') return false;
+int board[20][20];
 
-        for (int i = r - 1, j = c - 1; i >= 0 && j >= 0; i--, j--)
-            if (board[i][j] == 'Q') return false;
+bool safe(int row, int col, int n)
+{
+    for(int i = 0; i < row; i++)
+        if(board[i][col])
+            return false;
 
-        for (int i = r - 1, j = c + 1; i >= 0 && j < n; i--, j++)
-            if (board[i][j] == 'Q') return false;
+    for(int i = row - 1, j = col - 1; i >= 0 && j >= 0; i--, j--)
+        if(board[i][j])
+            return false;
 
+    for(int i = row - 1, j = col + 1; i >= 0 && j < n; i--, j++)
+        if(board[i][j])
+            return false;
+
+    return true;
+}
+
+bool nqueen(int row, int n)
+{
+    if(row == n)
         return true;
+
+    for(int col = 0; col < n; col++)
+    {
+        if(safe(row, col, n))
+        {
+            board[row][col] = 1;
+
+            if(nqueen(row + 1, n))
+                return true;
+
+            board[row][col] = 0;
+        }
     }
 
-    void solve(vector<string>& board, int r, int n) {
-        if (r == n) {
-            ans.push_back(board);
-            return;
-        }
+    return false;
+}
 
-        for (int c = 0; c < n; c++) {
-            if (safe(board, r, c, n)) {
-                board[r][c] = 'Q';
-                solve(board, r + 1, n);
-                board[r][c] = '.';
+int main()
+{
+    int n;
+
+    cout << "Enter N: ";
+    cin >> n;
+
+    if(nqueen(0, n))
+    {
+        for(int i = 0; i < n; i++)
+        {
+            for(int j = 0; j < n; j++)
+            {
+                if(board[i][j])
+                    cout << "Q ";
+                else
+                    cout << ". ";
             }
+            cout << endl;
         }
     }
-
-    vector<vector<string>> solveNQueens(int n) {
-        vector<string> board(n, string(n, '.'));
-        solve(board, 0, n);
-        return ans;
+    else
+    {
+        cout << "No solution";
     }
-};
+
+    return 0;
+}
